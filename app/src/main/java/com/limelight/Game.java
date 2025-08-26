@@ -23,12 +23,13 @@ import com.limelight.nvstream.StreamConfiguration;
 import com.limelight.nvstream.http.ComputerDetails;
 import com.limelight.nvstream.http.NvApp;
 import com.limelight.nvstream.http.NvHTTP;
-import com.limelight.nvstream.input.ControllerPacket;
 import com.limelight.nvstream.input.KeyboardPacket;
 import com.limelight.nvstream.input.MouseButtonPacket;
 import com.limelight.nvstream.jni.MoonBridge;
 import com.limelight.preferences.GlPreferences;
 import com.limelight.preferences.PreferenceConfiguration;
+import com.limelight.rho.TextureSurfaceRenderer;
+import com.limelight.rho.VideoTextureRenderer;
 import com.limelight.ui.GameGestures;
 import com.limelight.ui.StreamView;
 import com.limelight.utils.Dialog;
@@ -52,6 +53,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.graphics.SurfaceTexture;
 import android.hardware.input.InputManager;
 import android.media.AudioManager;
 import android.net.ConnectivityManager;
@@ -68,6 +70,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.SurfaceHolder;
+import android.view.TextureView;
 import android.view.View;
 import android.view.View.OnGenericMotionListener;
 import android.view.View.OnSystemUiVisibilityChangeListener;
@@ -79,6 +82,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
 import java.io.ByteArrayInputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -87,13 +92,17 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Locale;
 
+import com.leiainc.androidsdk.display.LeiaDisplayManager;
+import com.leiainc.androidsdk.display.LeiaDisplayManager.BacklightMode;
+import com.leiainc.androidsdk.display.LeiaSDK;
 
-public class Game extends Activity implements SurfaceHolder.Callback,
+
+public class Game extends Activity implements SurfaceHolder.Callback, TextureView.SurfaceTextureListener,
         OnGenericMotionListener, OnTouchListener, NvConnectionListener, EvdevListener,
         OnSystemUiVisibilityChangeListener, GameGestures, StreamView.InputCallbacks,
-        PerfOverlayListener, UsbDriverService.UsbDriverStateListener, View.OnKeyListener {
+        PerfOverlayListener, UsbDriverService.UsbDriverStateListener, View.OnKeyListener, TextureSurfaceRenderer.OnGlReadyListener {
     private int lastButtonState = 0;
-
+    private LeiaDisplayManager mDisplayManager ;
     // Only 2 touches are supported
     private final TouchContext[] touchContextMap = new TouchContext[2];
     private long threeFingerDownTime = 0;
@@ -108,6 +117,8 @@ public class Game extends Activity implements SurfaceHolder.Callback,
     private static final int STYLUS_UP_DEAD_ZONE_RADIUS = 50;
 
     private static final int THREE_FINGER_TAP_THRESHOLD = 300;
+
+
 
     private ControllerHandler controllerHandler;
     private KeyboardTranslator keyboardTranslator;
@@ -181,11 +192,46 @@ public class Game extends Activity implements SurfaceHolder.Callback,
     public static final String EXTRA_APP_HDR = "HDR";
     public static final String EXTRA_SERVER_CERT = "ServerCert";
 
+//    private boolean enable3dMode = false;
+//    private void update3dMode(boolean enable, boolean hasFocus) {
+//        enable3dMode = enable;
+//        LeiaHelper.update3dMode(streamView, enable, hasFocus);
+//    }
+
+    public  void setMODE(BacklightMode mode){
+        if(mDisplayManager!=null){
+            mDisplayManager.requestBacklightMode(mode);
+        }
+    }
+    public  void EnableBackLight(boolean enable){
+        if(mDisplayManager!=null){
+           if(enable){
+               setMODE(BacklightMode.MODE_3D);
+           }else {
+               setMODE(BacklightMode.MODE_2D);
+           }
+        }
+    }
+    public  void switchMode( ){
+        if(mDisplayManager!=null){
+            if(mDisplayManager.getBacklightMode() ==BacklightMode.MODE_3D ){
+                setMODE(BacklightMode.MODE_2D);
+            }else{
+                setMODE(BacklightMode.MODE_3D);
+            }
+        }
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         UiHelper.setLocale(this);
+
+        mDisplayManager = LeiaSDK.getDisplayManager(this);
+
+
 
         // We don't want a title bar
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -218,6 +264,8 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         // Read the stream preferences
         prefConfig = PreferenceConfiguration.readPreferences(this);
         tombstonePrefs = Game.this.getSharedPreferences("DecoderTombstone", 0);
+
+        EnableBackLight( prefConfig.enableBackLight);
 
         // Enter landscape unless we're on a square screen
         setPreferredOrientationForCurrentDisplay();
@@ -532,7 +580,9 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         }
 
         // The connection will be started when the surface gets created
-        streamView.getHolder().addCallback(this);
+        //streamView.getHolder().addCallback(this);
+        streamView.setSurfaceTextureListener(this);
+
     }
 
     private void setPreferredOrientationForCurrentDisplay() {
@@ -945,7 +995,8 @@ public class Game extends Activity implements SurfaceHolder.Callback,
 
         if (prefConfig.stretchVideo || aspectRatioMatch) {
             // Set the surface to the size of the video
-            streamView.getHolder().setFixedSize(prefConfig.width, prefConfig.height);
+            //todo 4rho
+            //streamView.getHolder().setFixedSize(prefConfig.width, prefConfig.height);
         }
         else {
             // Set the surface to scale based on the aspect ratio of the stream
@@ -2044,6 +2095,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
                         if (event.getEventTime() - threeFingerDownTime < THREE_FINGER_TAP_THRESHOLD) {
                             // This is a 3 finger tap to bring up the keyboard
                             toggleKeyboard();
+
                             return true;
                         }
                     }
@@ -2248,9 +2300,9 @@ public class Game extends Activity implements SurfaceHolder.Callback,
                     LimeLog.severe(stage + " failed: " + errorCode);
 
                     // If video initialization failed and the surface is still valid, display extra information for the user
-                    if (stage.contains("video") && streamView.getHolder().getSurface().isValid()) {
-                        Toast.makeText(Game.this, getResources().getText(R.string.video_decoder_init_failed), Toast.LENGTH_LONG).show();
-                    }
+//                    if (stage.contains("video") && streamView.getSurfaceTexture().isValid()) {
+//                        Toast.makeText(Game.this, getResources().getText(R.string.video_decoder_init_failed), Toast.LENGTH_LONG).show();
+//                    }
 
                     String dialogText = getResources().getString(R.string.conn_error_msg) + " " + stage +" (error "+errorCode+")";
 
@@ -2553,6 +2605,84 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         }
     }
 
+    private VideoTextureRenderer renderer;
+
+    @Override
+    public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height)
+    {
+
+        surfaceCreated = true;
+
+//        if (!surfaceCreated) {
+//            throw new IllegalStateException("Surface changed before creation!");
+//        }
+        if (!connected && !connecting) {
+            connecting = true;
+
+            renderer = new VideoTextureRenderer(this, streamView.getSurfaceTexture(), width, height, this);
+            renderer.setVideoSize(prefConfig.width, prefConfig.height);
+
+            renderer.setZoomFactor(50);
+            renderer.setDistortionFactor(81);
+            renderer.setWrapEnabled(true);
+            renderer.setEnable3D( prefConfig.enable3D);
+        }
+
+
+
+
+
+    }
+
+    @Override
+    public void onGlReady() {
+//        conn.start(PlatformBinding.getDeviceName(), new Surface(renderer.getVideoTexture()), drFlags,
+//                PlatformBinding.getAudioRenderer(), decoderRenderer);
+
+
+        if (!attemptedConnection) {
+            attemptedConnection = true;
+
+            // Update GameManager state to indicate we're "loading" while connecting
+            UiHelper.notifyStreamConnecting(Game.this);
+
+            decoderRenderer.setRenderTarget(new Surface(renderer.getVideoTexture()));
+            conn.start(new AndroidAudioRenderer(Game.this, prefConfig.enableAudioFx),
+                    decoderRenderer, Game.this);
+        }
+    }
+
+
+    @Override
+    public void onSurfaceTextureSizeChanged(@NonNull SurfaceTexture surfaceTexture, int i, int i1) {
+
+    }
+
+    @Override
+    public boolean onSurfaceTextureDestroyed(@NonNull SurfaceTexture surfaceTexture) {
+        if (!surfaceCreated) {
+            throw new IllegalStateException("Surface destroyed before creation!");
+        }
+
+        if (attemptedConnection) {
+            // Let the decoder know immediately that the surface is gone
+            decoderRenderer.prepareForStop();
+
+            if (connected) {
+                stopConnection();
+            }
+        }
+
+        return false;
+    }
+
+    @Override
+    public void onSurfaceTextureUpdated(@NonNull SurfaceTexture surfaceTexture) {
+
+    }
+
+
+
     @Override
     public void mouseMove(int deltaX, int deltaY) {
         conn.sendMouseMove((short) deltaX, (short) deltaY);
@@ -2673,4 +2803,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
                 return false;
         }
     }
+
+
+
 }

@@ -1,15 +1,16 @@
 apply plugin: 'com.android.application'
 
 android {
-    ndkVersion "27.0.12077973"
+    //27.0.12077973
+    ndkVersion "27.3.13750724"
 
     compileSdk 34
 
     namespace 'com.limelight'
 
     defaultConfig {
-        minSdk 21
-        targetSdk 34
+        minSdk 26
+        targetSdk 27
 
         versionName "12.1"
         versionCode = 314
@@ -63,6 +64,11 @@ android {
     lint {
         disable 'MissingTranslation'
         lintConfig file('lint.xml')
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
     }
 
     bundle {
@@ -120,7 +126,7 @@ android {
             //
             // TL;DR: Leave the following line alone!
             applicationIdSuffix ".unofficial"
-            resValue "string", "app_label", "Moonlight"
+            resValue "string", "app_label", "Moonlight4RHO"
             resValue "string", "app_label_root", "Moonlight (Root)"
 
             minifyEnabled true
@@ -134,6 +140,23 @@ android {
         }
     }
 }
+    buildscript {
+        repositories {
+            maven{ url 'https://maven.aliyun.com/repository/public'}
+            maven{ url 'https://maven.aliyun.com/repository/google'}
+            jcenter(){url'https://maven.aliyun.com/repository/jcenter'}
+            maven{ url 'https://maven.aliyun.com/repository/gradle-plugin'}
+        }
+    }
+
+    allprojects {
+        repositories {
+            maven{ url 'https://maven.aliyun.com/repository/public'}
+            maven{ url 'https://maven.aliyun.com/repository/google'}
+            jcenter(){url'https://maven.aliyun.com/repository/jcenter'}
+            maven{ url 'https://maven.aliyun.com/repository/gradle-plugin'}
+        }
+    }
 
 dependencies {
     implementation 'org.bouncycastle:bcprov-jdk18on:1.77'
@@ -142,4 +165,10 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:4.12.0'
     implementation 'org.jmdns:jmdns:3.5.9'
     implementation 'com.github.cgutman:ShieldControllerExtensions:1.0.1'
+ // https://mvnrepository.com/artifact/com.leiainc/androidsdk-core
+    implementation 'com.leiainc:androidsdk-core:1.7.22'
+    // https://mvnrepository.com/artifact/com.leiainc/androidsdk-display
+  //  implementation 'com.leiainc:androidsdk-display:7.0.20'
+// https://mvnrepository.com/artifact/com.leiainc/androidmediasdk
+  //  implementation 'com.leiainc:androidmediasdk:0.0.2'
 }

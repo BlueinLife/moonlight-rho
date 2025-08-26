@@ -268,6 +268,20 @@
             android:title="@string/title_enable_post_stream_toast"
             android:summary="@string/summary_enable_post_stream_toast"
             android:defaultValue="false"/>
+        <CheckBoxPreference
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:defaultValue="true"
+            android:key="checkbox_enable_backlight"
+            android:summary="@string/title_enable_backlight"
+            android:title="@string/title_enable_backlight" />
+        <CheckBoxPreference
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:defaultValue="true"
+            android:key="checkbox_enable_3D"
+            android:summary="@string/summary_enable_3d"
+            android:title="@string/title_enable_3d" />
     </PreferenceCategory>
     <!--PreferenceCategory android:title="@string/category_help"
         android:key="category_help">

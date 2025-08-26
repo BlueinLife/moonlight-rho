@@ -284,4 +284,8 @@
     <string name="summary_analog_scrolling">在鼠标模式下选择用哪个摇杆控制鼠标移动</string>
     <string name="summary_seekbar_vibrate_fallback_strength">增强或减弱设备的震动强度</string>
     <string name="analogscroll_none">默认 (两个摇杆都控制鼠标)</string>
+
+    <string name="title_enable_backlight">启用红氢一号光场</string>
+    <string name="title_enable_3d">启动3d</string>
+    <string name="summary_enable_3d">把sbs流转换为交错</string>
 </resources>
