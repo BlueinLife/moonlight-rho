@@ -227,6 +227,8 @@
     <string name="resolution_480p">480p</string>
     <string name="resolution_1440p">1440p</string>
     <string name="resolution_4k">4K</string>
+    <string name="resolution_sbs_720p">全 SBS 720p (2560×720)</string>
+    <string name="resolution_sbs_1080p">全 SBS 1080p (3840×1080)</string>
     <string name="fps_30">30 FPS</string>
     <string name="fps_60">60 FPS</string>
     <string name="fps_90">90 FPS</string>
@@ -288,4 +290,9 @@
     <string name="title_enable_backlight">启用红氢一号光场</string>
     <string name="title_enable_3d">启动3d</string>
     <string name="summary_enable_3d">把sbs流转换为交错</string>
+    <string name="title_sbs_mode">SBS 3D 布局</string>
+    <string name="summary_sbs_mode">选择半宽或全宽左右分屏，自动则按串流的画面尺寸判断。</string>
+    <string name="sbs_mode_auto">自动（按串流判断）</string>
+    <string name="sbs_mode_half">半宽（SBS Half）</string>
+    <string name="sbs_mode_full">全宽（SBS Full）</string>
 </resources>

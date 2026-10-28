@@ -70,6 +70,7 @@ public class PreferenceConfiguration {
     private static final String GAMEPAD_MOTION_FALLBACK_PREF_STRING = "checkbox_gamepad_motion_fallback";
     private static final String ENABLE_BACKLIGHT_STRING  = "checkbox_enable_backlight";
     private static final String ENABLE_3D_STRING  = "checkbox_enable_3D";
+    private static final String SBS_MODE_PREF_STRING = "list_sbs_mode";
     static final String DEFAULT_RESOLUTION = "1280x720";
     static final String DEFAULT_FPS = "60";
     private static final boolean DEFAULT_STRETCH = false;
@@ -158,6 +159,15 @@ public class PreferenceConfiguration {
     public boolean gamepadMotionSensorsFallbackToDevice;
     public boolean   enableBackLight;
     public boolean   enable3D;
+
+    // SBS 3D layout mode: how the decoded frame is interpreted as left/right eyes.
+    // AUTO  = detect from the actual decoded frame width (default, robust).
+    // HALF  = force half-width SBS (each eye is half the frame width; fills the eye canvas).
+    // FULL  = force full-width SBS (each eye is 16:9; letterboxed to avoid stretching).
+    public static final int SBS_MODE_AUTO = 0;
+    public static final int SBS_MODE_HALF = 1;
+    public static final int SBS_MODE_FULL = 2;
+    public int sbsMode;
 
     public static boolean isNativeResolution(int width, int height) {
         // It's not a native resolution if it matches an existing resolution option
@@ -402,8 +412,7 @@ public class PreferenceConfiguration {
         }
     }
 
-    private static AnalogStickForScrolling getAnalogStickForScrollingValue(Context context) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+    private static AnalogStickForScrolling getAnalogStickForScrollingValue(Context context) {        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
         String str = prefs.getString(ANALOG_SCROLLING_PREF_STRING, DEFAULT_ANALOG_STICK_FOR_SCROLLING);
         if (str.equals("right")) {
@@ -414,6 +423,22 @@ public class PreferenceConfiguration {
         }
         else {
             return AnalogStickForScrolling.NONE;
+        }
+    }
+
+    private static int getSbsModeValue(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+
+        String str = prefs.getString(SBS_MODE_PREF_STRING, "auto");
+        if (str.equals("half")) {
+            return SBS_MODE_HALF;
+        }
+        else if (str.equals("full")) {
+            return SBS_MODE_FULL;
+        }
+        else {
+            // Should never get here
+            return SBS_MODE_AUTO;
         }
     }
 
@@ -606,6 +631,7 @@ public class PreferenceConfiguration {
         config.gamepadMotionSensorsFallbackToDevice = prefs.getBoolean(GAMEPAD_MOTION_FALLBACK_PREF_STRING, DEFAULT_GAMEPAD_MOTION_FALLBACK);
         config.enableBackLight = prefs.getBoolean(ENABLE_BACKLIGHT_STRING, true);
         config.enable3D = prefs.getBoolean(ENABLE_3D_STRING, true);
+        config.sbsMode = getSbsModeValue(context);
         return config;
     }
 }

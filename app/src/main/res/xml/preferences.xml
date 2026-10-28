@@ -282,6 +282,13 @@
             android:key="checkbox_enable_3D"
             android:summary="@string/summary_enable_3d"
             android:title="@string/title_enable_3d" />
+        <ListPreference
+            android:key="list_sbs_mode"
+            android:title="@string/title_sbs_mode"
+            android:summary="@string/summary_sbs_mode"
+            android:entries="@array/sbs_mode_names"
+            android:entryValues="@array/sbs_mode_values"
+            android:defaultValue="auto" />
     </PreferenceCategory>
     <!--PreferenceCategory android:title="@string/category_help"
         android:key="category_help">

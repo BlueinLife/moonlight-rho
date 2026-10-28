@@ -258,6 +258,11 @@
     <string name="title_enable_backlight">enable rho backlight</string>
     <string name="title_enable_3d">Display 3d for rho</string>
     <string name="summary_enable_3d">change sbs to interlaced </string>
+    <string name="title_sbs_mode">SBS 3D layout</string>
+    <string name="summary_sbs_mode">Half-width or full-width side-by-side. Auto detects from the stream.</string>
+    <string name="sbs_mode_auto">Auto (detect from stream)</string>
+    <string name="sbs_mode_half">Half-width (SBS Half)</string>
+    <string name="sbs_mode_full">Full-width (SBS Full)</string>
 
     <string name="category_help">Help</string>
     <string name="title_setup_guide">Setup guide</string>
@@ -277,6 +282,8 @@
     <string name="resolution_1080p">1080p</string>
     <string name="resolution_1440p">1440p</string>
     <string name="resolution_4k">4K</string>
+    <string name="resolution_sbs_720p">Full SBS 720p (2560×720)</string>
+    <string name="resolution_sbs_1080p">Full SBS 1080p (3840×1080)</string>
 
     <string name="fps_30">30 FPS</string>
     <string name="fps_60">60 FPS</string>

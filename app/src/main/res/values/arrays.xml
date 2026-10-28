@@ -7,6 +7,8 @@
         <item>@string/resolution_1080p</item>
         <item>@string/resolution_1440p</item>
         <item>@string/resolution_4k</item>
+        <item>@string/resolution_sbs_720p</item>
+        <item>@string/resolution_sbs_1080p</item>
     </string-array>
 
     <!-- Keep this in sync with PreferenceConfiguration.isNativeResolution()! -->
@@ -17,6 +19,8 @@
         <item>1920x1080</item>
         <item>2560x1440</item>
         <item>3840x2160</item>
+        <item>2560x720</item>
+        <item>3840x1080</item>
     </string-array>
 
     <string-array name="fps_names">
@@ -106,6 +110,18 @@
         <item>forceav1</item>
         <item>forceh265</item>
         <item>neverh265</item>
+    </string-array>
+
+    <!-- SBS 3D layout mode: how the decoded frame is interpreted as left/right eyes -->
+    <string-array name="sbs_mode_names">
+        <item>@string/sbs_mode_auto</item>
+        <item>@string/sbs_mode_half</item>
+        <item>@string/sbs_mode_full</item>
+    </string-array>
+    <string-array name="sbs_mode_values" translatable="false">
+        <item>auto</item>
+        <item>half</item>
+        <item>full</item>
     </string-array>
 
     <string-array name="video_frame_pacing_names">

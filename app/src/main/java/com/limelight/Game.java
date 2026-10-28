@@ -993,10 +993,13 @@ public class Game extends Activity implements SurfaceHolder.Callback, TextureVie
             }
         }
 
-        if (prefConfig.stretchVideo || aspectRatioMatch) {
+        if (prefConfig.stretchVideo || aspectRatioMatch || prefConfig.enable3D) {
             // Set the surface to the size of the video
             //todo 4rho
             //streamView.getHolder().setFixedSize(prefConfig.width, prefConfig.height);
+            // In 3D SBS mode the VideoTextureRenderer does the per-eye aspect
+            // correction itself, so keep the surface full-screen and let the
+            // shader handle half/full SBS without stretching.
         }
         else {
             // Set the surface to scale based on the aspect ratio of the stream
@@ -2626,6 +2629,7 @@ public class Game extends Activity implements SurfaceHolder.Callback, TextureVie
             renderer.setDistortionFactor(81);
             renderer.setWrapEnabled(true);
             renderer.setEnable3D( prefConfig.enable3D);
+            renderer.setSbsMode( prefConfig.sbsMode);
         }
 
 
